@@ -1,2 +1,2 @@
 # Mini-Project_2
-Mini Project
+Mini Project -2
