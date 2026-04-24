@@ -40,3 +40,11 @@ soundfile
 
 # vedio_generator
 moviepy
+
+# Authentication
+flask-login
+flask-sqlalchemy
+flask-bcrypt
+email-validator
+flask-wtf
+wtforms

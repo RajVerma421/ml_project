@@ -1,69 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>T-29 AI Script Generator</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Virtual Influencer System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
-
-    <div class="container">
-
-        <div class="card">
-            <h1>🎬 AI Influencer</h1>
-
-            <form id="scriptForm" action="/generate_script" method="POST">
-
-                <div class="input-group">
-                    <label>Topic</label>
-                    <input type="text" name="topic" placeholder="Enter topic..." required>
-                </div>
-
-                <div class="input-group">
-                    <label>Content Type</label>
-                    <select name="type">
-                        <option value="Reel">Reel</option>
-                        <option value="Instagram Post">Instagram Post</option>
-                        <option value="YouTube Short">YouTube Short</option>
-                        <option value="Advertisement">Advertisement</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>Emotion</label>
-                    <select name="emotion">
-                        <option value="Excited">Excited</option>
-                        <option value="Motivational">Motivational</option>
-                        <option value="Funny">Funny</option>
-                        <option value="Serious">Serious</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn">Generate</button>
-
-            </form>
-
-            <div id="loader" class="loader hidden"></div>
-
-            {% if script %}
-            <div class="output-card">
-                <h3>✨ Generated Script</h3>
-                <p>{{ script }}</p>
-            </div class="output-card">
-            {% endif %}
-            {% if video_file %}
-            <h3>Generated Video:</h3>
-            <video width="200" controls>
-                <source src="{{ url_for('serve_video', filename=video_file) }}" type="video/mp4">
-            </video>
-            {% endif %}
-        </div>
-
+    <div class="bg-mesh"></div>
+    <div class="bg-float">
+        <div class="float-shape float-1"></div>
+        <div class="float-shape float-2"></div>
+        <div class="float-shape float-3"></div>
     </div>
 
-    <script src="../static/script.js"></script>
-</body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="nav-brand">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="brand-name">Team - 29</span>
+                    <span class="brand-sub">Virtual Influencer</span>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                {% if current_user.is_authenticated %}
+                    <div class="user-menu">
+                        <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
+                        <a href="{{ url_for('logout') }}" class="logout-link">Sign Out</a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link">Sign In</a>
+                    <a href="{{ url_for('register') }}" class="nav-btn">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
 
-</html> 
+    <main class="main">
+        <section class="hero">
+            <div class="hero-visual">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="10" r="3"/>
+                    <path d="M12 2v4"/>
+                    <path d="M17 20H7"/>
+                    <path d="M8 17c2 0 3-1 3-3s-1-3-3-3"/>
+                    <path d="M16 17c-2 0-3-1-3-3s1-3 3-3"/>
+                </svg>
+            </div>
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                AI-Powered Virtual Influencer System
+            </div>
+            <h1 class="hero-title">
+                Create Professional<br>
+                <span>Multimedia Content</span>
+            </h1>
+            <p class="hero-subtitle">
+                An intelligent system for automated script generation, text-to-speech conversion,
+                and professional video production powered by AI. Create viral content for social media in seconds.
+            </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">AI Models</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Automated</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <div class="stat-value">720p</div>
+                    <div class="stat-label">HD Output</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="generator">
+            <div class="generator-card">
+                {% if not current_user.is_authenticated %}
+                    <div class="locked-card">
+                        <div class="lock-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <h2 class="lock-title">Start Creating Content</h2>
+                        <p class="lock-desc">Sign in to access the Team-29 multimedia content generation system.</p>
+                        <div class="lock-features">
+                            <div class="lock-feature">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>AI Script Generation</span>
+                            </div>
+                            <div class="lock-feature">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Text-to-Speech Audio</span>
+                            </div>
+                            <div class="lock-feature">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Professional Video</span>
+                            </div>
+                            <div class="lock-feature">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Social Media Ready</span>
+                            </div>
+                        </div>
+                        <div class="lock-actions">
+                            <a href="{{ url_for('register') }}" class="lock-btn lock-btn-primary">Create Free Account</a>
+                            <a href="{{ url_for('login') }}" class="lock-btn lock-btn-secondary">Sign In</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="generator-header">
+                        <div class="generator-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                        </div>
+                        <h2 class="generator-title">Create New Content</h2>
+                        <p class="generator-desc">Generate AI-powered scripts and produce professional videos</p>
+                    </div>
+
+                    <form method="POST" action="/generate_script" id="scriptForm">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        
+                        <div class="form-section">
+                            <label class="form-label">Topic / Idea</label>
+                            <input type="text" name="topic" class="form-input" placeholder="e.g. education, technology, fitness..." required>
+                        </div>
+
+                        <div class="form-grid">
+                            <div>
+                                <label class="form-label">Platform</label>
+                                <select name="type" class="form-select">
+                                    <option value="Reel">Instagram Reel</option>
+                                    <option value="Post">Instagram Post</option>
+                                    <option value="YouTube Short">YouTube Short</option>
+                                    <option value="TikTok">TikTok</option>
+                                    <option value="Advertisement">Advertisement</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Tone</label>
+                                <select name="emotion" class="form-select">
+                                    <option value="Excited">Excited</option>
+                                    <option value="Motivational">Motivational</option>
+                                    <option value="Funny">Funny</option>
+                                    <option value="Serious">Professional</option>
+                                    <option value="Inspirational">Inspirational</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="generateBtn">
+                            <span class="btn-text">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                                Generate Content
+                            </span>
+                            <span class="btn-loading" style="display:none">
+                                <span class="loader-dots">
+                                    <span></span><span></span><span></span>
+                                </span>
+                                Generating...
+                            </span>
+                        </button>
+                    </form>
+
+                    <div class="generating-overlay" id="generatingOverlay" style="display:none">
+                        <div class="generating-content">
+                            <div class="generating-spinner">
+                                <div class="spinner-ring"></div>
+                                <div class="spinner-ring"></div>
+                                <div class="spinner-ring"></div>
+                            </div>
+                            <div class="generating-text">Generating Your Content</div>
+                            <div class="generating-steps">
+                                <div class="gen-step active" id="genStep1">
+                                    <span class="gen-icon">1</span>
+                                    <span>Script</span>
+                                </div>
+                                <div class="gen-step" id="genStep2">
+                                    <span class="gen-icon">2</span>
+                                    <span>Audio</span>
+                                </div>
+                                <div class="gen-step" id="genStep3">
+                                    <span class="gen-icon">3</span>
+                                    <span>Video</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if script %}
+                    <div class="result">
+                        <div class="result-title">
+                        <span class="result-badge">Generated Script</span>
+                        <button class="copy-btn" onclick="copyToClipboard()">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            Copy Script
+                        </button>
+                    </div>
+                    <div class="result-content">{{ script }}</div>
+
+                    {% if video_file %}
+                    <div class="video-result">
+                        <div class="result-title">
+                            <span class="result-badge result-badge-video">Generated Video</span>
+                            <span class="video-duration" id="videoDuration">Loading...</span>
+                        </div>
+                        <div class="video-wrapper">
+                            <video controls class="video-player" id="resultVideo">
+                                <source src="{{ url_for('serve_video', filename=video_file) }}" type="video/mp4">
+                            </video>
+                        </div>
+                        <a href="{{ url_for('serve_video', filename=video_file) }}" download class="download-btn">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download Video
+                        </a>
+                    </div>
+                    {% endif %}
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <h2 class="features-title">Powerful AI Features</h2>
+            <p class="features-subtitle">Three state-of-the-art AI models working together</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                            <polyline points="2 12 12 17 22 12"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">AI Script Generator</h3>
+                    <p class="feature-desc">Powered by Ollama LLM using Mistral model for intelligent content creation.</p>
+                    <div class="feature-tags">
+                        <span class="feature-tag">Python</span>
+                        <span class="feature-tag">LangChain</span>
+                        <span class="feature-tag">Ollama</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Neural Text-to-Speech</h3>
+                    <p class="feature-desc">SpeechT5 transformer model converts scripts to natural-sounding audio.</p>
+                    <div class="feature-tags">
+                        <span class="feature-tag">Transformers</span>
+                        <span class="feature-tag">PyTorch</span>
+                        <span class="feature-tag">SpeechT5</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Video Production</h3>
+                    <p class="feature-desc">MoviePy renders professional videos with animations and integrated audio.</p>
+                    <div class="feature-tags">
+                        <span class="feature-tag">MoviePy</span>
+                        <span class="feature-tag">NumPy</span>
+                        <span class="feature-tag">Pillow</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p class="footer-text">AI-Powered Virtual Influencer System for Automated Multimedia Content Creation</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
