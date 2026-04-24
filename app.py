@@ -37,6 +37,10 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    full_name = db.Column(db.String(100), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
+    location = db.Column(db.String(100), nullable=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     is_active = db.Column(db.Boolean, default=True)
     is_admin = db.Column(db.Boolean, default=False)
@@ -181,6 +185,85 @@ def login():
 def logout():
     logout_user()
     flash('You have been signed out.', 'info')
+    return redirect(url_for('home'))
+
+
+def validate_password(password):
+    import re
+    errors = []
+    if len(password) < 8:
+        errors.append('Password must be at least 8 characters.')
+    if not re.search(r'[A-Z]', password):
+        errors.append('Password must contain at least one uppercase letter.')
+    if not re.search(r'[a-z]', password):
+        errors.append('Password must contain at least one lowercase letter.')
+    if not re.search(r'[0-9]', password):
+        errors.append('Password must contain at least one number.')
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        errors.append('Password must contain at least one special character (!@#$%^&*).')
+    return errors
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        current_user.full_name = request.form.get('full_name')
+        current_user.bio = request.form.get('bio')
+        current_user.phone = request.form.get('phone')
+        current_user.location = request.form.get('location')
+        
+        new_email = request.form.get('email')
+        if new_email and new_email != current_user.email:
+            if User.query.filter_by(email=new_email).first():
+                flash('Email already in use.', 'danger')
+                return redirect(url_for('profile'))
+            current_user.email = new_email
+        
+        new_password = request.form.get('new_password')
+        current_password = request.form.get('current_password')
+        
+        if new_password:
+            if not current_password:
+                flash('Please enter your current password to set a new one.', 'danger')
+                return redirect(url_for('profile'))
+            if not bcrypt.check_password_hash(current_user.password, current_password):
+                flash('Current password is incorrect.', 'danger')
+                return redirect(url_for('profile'))
+            
+            errors = validate_password(new_password)
+            if errors:
+                for error in errors:
+                    flash(error, 'danger')
+                return redirect(url_for('profile'))
+            
+            current_user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('profile'))
+    
+    return render_template('profile.html')
+
+
+@app.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    current_password = request.form.get('current_password')
+    
+    if not current_password:
+        flash('Please enter your password to delete account.', 'danger')
+        return redirect(url_for('profile'))
+    
+    if not bcrypt.check_password_hash(current_user.password, current_password):
+        flash('Password is incorrect.', 'danger')
+        return redirect(url_for('profile'))
+    
+    username = current_user.username
+    db.session.delete(current_user)
+    db.session.commit()
+    logout_user()
+    flash(f'Account "{username}" has been deleted. Sorry to see you go!', 'success')
     return redirect(url_for('home'))
 
 

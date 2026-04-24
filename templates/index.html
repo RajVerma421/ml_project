@@ -36,7 +36,12 @@
                 <a href="#features" class="nav-link">Features</a>
                 {% if current_user.is_authenticated %}
                     <div class="user-menu">
-                        <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
+                        <a href="{{ url_for('profile') }}" class="user-avatar" title="Profile">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </a>
                         <a href="{{ url_for('logout') }}" class="logout-link">Sign Out</a>
                     </div>
                 {% else %}

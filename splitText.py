@@ -11,4 +11,4 @@ def split_text(text, max_length=200):
             current = sentence
 
     chunks.append(current)
-    return chunks
+    return chunks 

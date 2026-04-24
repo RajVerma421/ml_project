@@ -19,4 +19,4 @@ pipe = pipeline(
     max_new_tokens=300
 )
 
-print("Model ready!")
+print("Model ready!") 

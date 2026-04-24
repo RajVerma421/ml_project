@@ -77,7 +77,7 @@ function copyToClipboard() {
 }
 
 function togglePassword(button) {
-    const wrapper = button.closest('.password-wrapper');
+    const wrapper = button.closest('.password-wrapper, .password-input');
     const input = wrapper.querySelector('input[type="password"], input[type="text"]');
     const isPassword = input.type === 'password';
     
