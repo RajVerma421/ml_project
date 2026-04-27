@@ -51,6 +51,4 @@ wtforms
 
 # Production Server
 gunicorn
-
-# Database (for production)
-psycopg2-binary
+imageio-ffmpeg
